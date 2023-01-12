@@ -1,0 +1,4 @@
+PyQt6
+PyWin32
+openai
+py-openapi-schema-to-json-schema
