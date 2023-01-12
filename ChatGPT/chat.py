@@ -1,15 +1,4 @@
 import sys
-import subprocess
-import pkg_resources
-
-required = {'PyQt6', 'openai', 'py-openapi-schema-to-json-schema'}
-installed = {pkg.key for pkg in pkg_resources.working_set}
-missing = required - installed
-
-if missing:
-    python = sys.executable
-    subprocess.check_call([python, '-m', 'pip', 'install', *missing], stdout=subprocess.DEVNULL)
-
 import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow

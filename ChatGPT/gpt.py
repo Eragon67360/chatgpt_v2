@@ -1,9 +1,8 @@
-import os
 import openai
-import json
 from openapi_schema_to_json_schema import to_json_schema
+import API
 
-openai.api_key = "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"
+openai.api_key = API.API_KEY
 
 def getModelIDs():
     models = openai.Model.list()
