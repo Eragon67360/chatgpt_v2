@@ -1,4 +1,4 @@
-PyQt6
-PyWin32
+webbrowser
+flet
 openai
 py-openapi-schema-to-json-schema
