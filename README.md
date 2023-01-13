@@ -20,7 +20,7 @@ Then, create a file named __API.py__ in the same folder as the file chat.py.
 
 Put the API-key in it.
 
-Windows-users:
+### Windows-users:
 
     Notepad API.py
     
@@ -29,7 +29,7 @@ At the beginning of the file, write:
     API_KEY="sk-..."
     
     
-Linux users:
+### Linux users:
 
     echo 'API_KEY="sk-..."' > API.py
 
