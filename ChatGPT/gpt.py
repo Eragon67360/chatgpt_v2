@@ -18,7 +18,7 @@ def getModelIDs():
     return listModels
 
 
-def getCompletion(model, prompt, temperature=0, max_tokens=100,top_p=1, frequency_penalty=0.0, presence_penalty=0.0, stop=None):
+def getCompletion(model, prompt, temperature=0, max_tokens=2048,top_p=1, frequency_penalty=0.0, presence_penalty=0.0, stop=None):
     completion = openai.Completion.create(
         
         model=model,
