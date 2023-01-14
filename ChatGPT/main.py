@@ -1,7 +1,12 @@
 import flet as ft
+from flet import (
+    Page,
+    colors
+)
 from gpt import getCompletion, getModelIDs
 import webbrowser
 import time
+from chatgpt import GPT
 
 text_home = [
         "\"Explain quantum computing in simple terms\"",
@@ -15,52 +20,101 @@ text_home = [
         "Limited knowledge of world and events after 2021"
 ]
 
+
 def main(page: ft.Page):
     page.window_min_width = 480
     page.window_min_height = 270
     page.window_maximized = True
 
     page.title = 'ChatGTP v.2'
+    page.appbar = ft.AppBar(
+        title=ft.Text("OpenAI v2"),    # title of the AppBar, with a white color
+        center_title=True,          # we center the title,
+    )
     page.theme_mode = ft.ThemeMode.DARK
     page.padding = 0
     page.spacing = 0
     
+    list_questions = []
     list_answers = []
 
     model_davinci = "text-davinci-003"
 
-    title = ft.Text("ChatGPT v.2",
-        size=30,
-        bgcolor=None,
+    outputs = ft.Row(controls=[
+        ft.Container(
+            content=ft.Column(
+                wrap=True,
+                expand=True,
+                width=1200,),
+                
+        )],
         expand=True,
-        text_align=ft.TextAlign.CENTER)
+        vertical_alignment=ft.CrossAxisAlignment.START,
+        auto_scroll=True,
+        scroll=ft.ScrollMode.ALWAYS,
+        
+    )
+
+
+    def updateOutputForRequest():
+        outputs.controls[0].content.controls.clear()
+        for i in range(len(list_questions)):
+            outputs.controls[0].content.controls.append(ft.Text(list_questions[i], size=16))
+            if i<(len(list_answers)):
+
+                outputs.controls[0].content.controls.append(ft.Markdown(list_answers[i],
+                                        selectable=True,
+                                        extension_set="gitHubWeb",
+                                        code_theme="tomorrow-night",
+                                        code_style=ft.TextStyle(font_family="Roboto Mono"),#expand=True,
+                                        on_tap_link=lambda e: page.launch_url(e.data),width=700))
+        page.update()
+
+    def updateOutputAfterRequest():
+        outputs.controls[0].content.controls.clear()
+        for i in range(len(list_questions)):
+            outputs.controls[0].content.controls.append(ft.Text(list_questions[i], size=16))            
+            outputs.controls[0].content.controls.append(ft.Markdown(list_answers[i],
+                                    selectable=True,
+                                    extension_set="gitHubWeb",
+                                    code_theme="tomorrow-night",
+                                    code_style=ft.TextStyle(font_family="Roboto Mono"),#expand=True,
+                                    on_tap_link=lambda e: page.launch_url(e.data),width=700))
+
+        # for i in response:
+        #     printed_response = printed_response+i
+        #     time.sleep(0.02)
+        #     bot_answer.value = printed_response
+        page.update()
 
     def sendRequest(e):
+        codes_examples.visible = False
+        page.update()
         model = dropdown.value
-
+        
         if model == None:
             model = model_davinci
         
         prompt = textfield_question.value + "(generate your answer using markdown)"
+        list_questions.append(textfield_question.value)
+        
+        updateOutputForRequest()
         response = ""
         printed_response = ""
-        if prompt != "":
+        if textfield_question.value != "":
+            textfield_question.value = ""
+            textfield_question.update()
             response = getCompletion(model,prompt)
-            
             list_answers.append(response)
             textlog.value=str("")
             textlog.update()
         else:
             textlog.value=str("You need to input a question first!")
             textlog.update()
-        for i in response:
-            printed_response = printed_response+i
-            time.sleep(0.02)
-            bot_answer.value = printed_response
-            bot_answer.update()
-                
-                
         
+        updateOutputAfterRequest()
+        
+            
 
     def changeMode(e):
         if page.theme_mode == ft.ThemeMode.DARK:
@@ -103,9 +157,12 @@ def main(page: ft.Page):
     
     codes_examples = ft.Row(        
         wrap=True,
-        expand=False,
-        width=800
+        expand=True,
+        width=800,
+        
     )
+
+
 
     menu_container = ft.Column(
                     [                        
@@ -140,21 +197,14 @@ def main(page: ft.Page):
         color=ft.colors.RED,
         bgcolor=None)
 
-#     code="1. Open the file.\n\
-# 2. Find the following code block on line 21:\n\
-# \n\
-#         <html>\n\
-#           <head>\n\
-#             <title>Test</title>\n\
-#           </head>\n\
-# \n\
-# 3. Update the title to match the name of your website."
-
     bot_answer = ft.Markdown(selectable=True,
                             extension_set="gitHubWeb",
-                            code_theme="atom-one-dark",
+                            code_theme="tomorrow-night",
                             code_style=ft.TextStyle(font_family="Roboto Mono"),
+                            expand=True,
                             on_tap_link=lambda e: page.launch_url(e.data),width=700)
+
+
 
     message_box = ft.Row([
         ft.Container(content=textfield_question),
@@ -174,9 +224,8 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Column(                        
                         controls=[
-                            title,
                             codes_examples,
-                            bot_answer,
+                            outputs,
                             textlog,
                             message_box,
                             text_credit
@@ -194,6 +243,8 @@ def main(page: ft.Page):
     )
 
     page.update()
+
+    
 
     for i in range(3):
         codes_examples.controls.append(
@@ -239,4 +290,4 @@ def main(page: ft.Page):
 
     
 
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main, view=ft.WEB_BROWSER, web_renderer='html')
