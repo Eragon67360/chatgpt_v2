@@ -56,7 +56,7 @@ class ModernNavBar(UserControl):
                 horizontal_alignment=CrossAxisAlignment.START,
                 spacing=5,
                 controls=[
-                    self.ContainedIcon(icons.HOME_FILLED, 'Home', self.func_home),
+                    self.ContainedIcon(icons.HOME, 'Home', self.func_home),
                     self.ContainedIcon(icons.SUNNY, 'Light mode', self.func_mode),
                     Divider(color=colors.BLUE_GREY, height=5),
                     self.ContainedIcon(icons.DISCORD, 'OpenAI Discord', self.func_discord),
