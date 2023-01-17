@@ -1,4 +1,4 @@
-from flet import flet, Page,ThemeMode
+from flet import *
 import os, importlib.util
 
 #routing
@@ -26,6 +26,7 @@ def main(page: Page):
     page.title = 'OpenAI All-In-One'
 
     page.theme_mode = ThemeMode.DARK
+    page.dark_theme = Theme(color_scheme_seed=colors.WHITE, page_transitions=PageTransitionsTheme.ios)
 
     page.views.append(
         _moduleList['/login'].loader.load_module()._view_()
@@ -37,4 +38,4 @@ def main(page: Page):
     pass
 
 if __name__ == '__main__':
-    flet.app(target=main)
+    app(target=main)

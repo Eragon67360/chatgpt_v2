@@ -28,7 +28,7 @@ def _view_(first_name: str, last_name: str):
                                         animate=animation.Animation(35,"decelerate"),
                                         on_hover=lambda e:ShowMenu(e),
                                         content=ModernNavBar(
-                                            lambda e: ChangeRoute(e, '/index'),
+                                            None,
                                             None,
                                             lambda e: openDiscord(e),
                                             lambda e: openHelp(e),
