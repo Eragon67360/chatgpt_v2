@@ -50,6 +50,12 @@ def ChangeRoute(e, page_route):
         e.page.go("/login")
         e.page.go("/register")
 
+    if page_route == '/index':
+        e.page.views.append(
+            _moduleList[page_route].loader.load_module()._view_()
+        )
+        e.page.go("/index")
+
     else:
         pass
 
@@ -91,7 +97,6 @@ def Registeruser(e):
             except Exception as e:
                 print(e)
 
-
 def ShowMenu(e):
     
     for page in e.page.views[:]:
@@ -123,17 +128,22 @@ def GetUserDetails(e):
                 SESSION['users'] = user
 
                 val = db.child('users').get()
-                for i in val:
-                    if i.val()['email'] == user['email']:
-                        first_name = i.val()['firstName']
-                        last_name = i.val()['lastName']
+                print("TEST")
+                print((val.val().values()))#'email'
+                # for i in val.val():
+                #     if i['email'] == user['email']:
+                #         print("okay")
+                #         first_name = i.val()['firstName']
+                #         last_name = i.val()['lastName']
 
-                        SESSION['path'] = i.key()
-                        SESSION['firstName'] = first_name
-                        SESSION['lastName'] = last_name
+                #         SESSION['path'] = i.key()
+                #         SESSION['firstName'] = first_name
+                #         SESSION['lastName'] = last_name
 
-                    return[first_name,last_name]
+                #         return[first_name,last_name]
+                [('-NLpnCX-624g7DKjrjoz', {'email': 'testtest', 'firstName': '', 'lastName': ''}), 
+                ('-NLtkrPc_MMPTbyO6NeZ', {'email': 'toto@gmail.com', 'firstName': 'Thomas', 'lastName': 'Moser'})]
 
-            
             except  Exception as e:
                 print(e)
+    
