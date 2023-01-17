@@ -50,7 +50,7 @@ class TechChoice(UserControl):
                                 ),
                                 Container(
                                     content=ElevatedButton(
-                                        on_click=None,
+                                        on_click=lambda e: ChangeRoute(e, '/dalle'),
                                         content=Text(
                                             "DALL·E 2 v.2",
                                             size=16,
