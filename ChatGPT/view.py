@@ -9,6 +9,8 @@ from datetime import datetime
 
 from API import API_FIREBASE
 from flet import *
+import webbrowser
+
 
 # Your web app's Firebase configuration
 # For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -29,7 +31,9 @@ SESSION = {}
 
 firebase = pyrebase.initialize_app(CONFIG)
 auth = firebase.auth()
+
 db = firebase.database()
+
 
 
 def ChangeRoute(e, page_route):
@@ -48,20 +52,27 @@ def ChangeRoute(e, page_route):
             _moduleList[page_route].loader.load_module()._view_()
         )
         e.page.go("/login")
-        e.page.go("/register")
 
     if page_route == '/index':
+        
+        e.page.views.append(
+            _moduleList[page_route].loader.load_module()._view_(
+            None,
+            None
+            )
+        )
+        e.page.go("/index")
+
+    if page_route == '/chatgpt':
         e.page.views.append(
             _moduleList[page_route].loader.load_module()._view_()
         )
-        e.page.go("/index")
+        e.page.go("/chatgpt")
 
     else:
         pass
 
     e.page.update()
-
-
 
 # register user when pushing sign up
 
@@ -109,9 +120,22 @@ def ShowMenu(e):
                 page.update()
 
 
-def LogInUser(e):
+def LogInUser(e):    
     first_name, last_name = GetUserDetails(e)
-    print(first_name, last_name)
+    e.page.views.clear()
+    
+    e.page.views.append(_moduleList['/index'].loader.load_module()._view_(
+        first_name,
+        last_name
+    ))
+
+    e.page.go('/index')
+    e.page.update()
+
+def LogOutUser(e):
+    auth.current_user = None
+    
+    ChangeRoute(e, '/login')
 
 def GetUserDetails(e):
     global _moduleList
@@ -120,30 +144,32 @@ def GetUserDetails(e):
             res = page.controls[0].controls[0].content.controls[4]
 
             try:
+                
                 user = auth.sign_in_with_email_and_password(
                     res.controls[0].content.value,
                     res.controls[1].content.value,
                 )
 
-                SESSION['users'] = user
+                SESSION["users"] = user
 
-                val = db.child('users').get()
-                print("TEST")
-                print((val.val().values()))#'email'
-                # for i in val.val():
-                #     if i['email'] == user['email']:
-                #         print("okay")
-                #         first_name = i.val()['firstName']
-                #         last_name = i.val()['lastName']
+                val = db.child("users").get()
+                
+                for i in val.each():
+                    if i.val()["email"] == user["email"]:
+                        first_name = i.val()['firstName']
+                        last_name = i.val()['lastName']
 
-                #         SESSION['path'] = i.key()
-                #         SESSION['firstName'] = first_name
-                #         SESSION['lastName'] = last_name
+                        SESSION['path'] = i.key()
+                        SESSION['firstName'] = first_name
+                        SESSION['lastName'] = last_name
 
-                #         return[first_name,last_name]
-                [('-NLpnCX-624g7DKjrjoz', {'email': 'testtest', 'firstName': '', 'lastName': ''}), 
-                ('-NLtkrPc_MMPTbyO6NeZ', {'email': 'toto@gmail.com', 'firstName': 'Thomas', 'lastName': 'Moser'})]
+                        return[first_name,last_name]
 
             except  Exception as e:
                 print(e)
     
+def openDiscord(e):
+    webbrowser.open('https://discord.com/invite/openai')
+
+def openHelp(e):
+    webbrowser.open('https://help.openai.com/en/')
