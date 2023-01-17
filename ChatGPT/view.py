@@ -57,8 +57,8 @@ def ChangeRoute(e, page_route):
         
         e.page.views.append(
             _moduleList[page_route].loader.load_module()._view_(
-            None,
-            None
+            SESSION["firstName"],
+            SESSION["lastName"]
             )
         )
         e.page.go("/index")
@@ -69,6 +69,24 @@ def ChangeRoute(e, page_route):
         )
         e.page.go("/chatgpt")
 
+    if page_route == '/profile':
+        created_on, last_login, first_name, last_name, email = ProfileUserData()
+        e.page.views.append(
+            _moduleList[page_route].loader.load_module()._view_(
+                created_on,
+                last_login,
+                first_name,
+                last_name,
+                email
+            )
+        )
+        e.page.go("/profile")
+
+    if page_route == '/dalle':
+        e.page.views.append(
+            _moduleList[page_route].loader.load_module()._view_()
+        )
+        e.page.go("/dalle")
     else:
         pass
 
@@ -173,3 +191,28 @@ def openDiscord(e):
 
 def openHelp(e):
     webbrowser.open('https://help.openai.com/en/')
+
+
+def ProfileUserData():
+    global _moduleList
+    user_info = []
+
+    info = auth.get_account_info(SESSION["users"]["idToken"])
+    
+    data = ["createdAt", "lastLoginAt"]
+
+    for key in info:
+        if key == "users":
+            for item in data:
+                user_info.append(
+                    datetime.fromtimestamp(int(info[key][0][item]) / 1000).strftime(
+                        "%D - %H:%M %p"
+                    )                    
+                )
+
+    user_info.append(SESSION["firstName"])
+    user_info.append(SESSION["lastName"])
+    user_info.append(SESSION["users"]["email"])
+
+
+    return user_info
