@@ -6,7 +6,6 @@ from flet import (
 from gpt import getCompletion, getModelIDs
 import webbrowser
 import time
-from chatgpt import GPT
 
 text_home = [
         "\"Explain quantum computing in simple terms\"",
