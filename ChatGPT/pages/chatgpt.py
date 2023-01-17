@@ -2,7 +2,7 @@ from flet import *
 
 from gpt_control import getCompletion, getModelIDs
 from controls.navbar import ModernNavBar
-from controls.gpt import GPT
+from controls.gpt import GPTWrite,GPTAnswer,GPTParameters
 
 from view import ShowMenu,LogOutUser, ChangeRoute, openDiscord, openHelp
 import webbrowser
@@ -41,12 +41,18 @@ def _view_():
                             VerticalDivider(width=60, color=colors.TRANSPARENT),
                             Column(
                                 expand=True,
-                                alignment=MainAxisAlignment.CENTER,
+                                alignment=MainAxisAlignment.SPACE_BETWEEN,
                                 horizontal_alignment=CrossAxisAlignment.CENTER,
                                 controls=[
-                                    GPT(),
+                                    GPTParameters(),
+                                    # Divider(height=500, color=colors.TRANSPARENT),
+                                    GPTAnswer(),
+                                    # Divider(height=500, color=colors.TRANSPARENT),
+                                    GPTWrite(),
+                                    
                                 ]
-                            )
+                            ),
+                            
                         ]
                     )
                 ]

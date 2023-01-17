@@ -19,21 +19,19 @@ for _, dirs, __ in os.walk(r'./'):
                         "/" + filename
                     ] = importlib.util.spec_from_file_location(filename, _file)
 
-
-
-
 def main(page: Page):
     page.title = 'OpenAI All-In-One'
 
     page.theme_mode = ThemeMode.DARK
-    page.dark_theme = Theme(color_scheme_seed=colors.WHITE, page_transitions=PageTransitionsTheme.ios)
+    page.dark_theme = Theme(page_transitions=PageTransitionsTheme.ios)
 
+    page.window_min_width = 730
     page.views.append(
-        _moduleList['/login'].loader.load_module()._view_()
+        _moduleList['/chatgpt'].loader.load_module()._view_()
     )
 
     #set the URL
-    page.go("/login")
+    page.go("/chatgpt")
     page.update()
     pass
 

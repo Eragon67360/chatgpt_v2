@@ -1,6 +1,6 @@
 from flet import *
 
-def InputTextField(text, hide):
+def InputTextField(text, hide, reveal=False):
     return Container(
         alignment=alignment.center,
         content=TextField(
@@ -17,6 +17,7 @@ def InputTextField(text, hide):
             hint_text=text,
             hint_style=TextStyle(size=11, color="#75a99c"),
             password=hide,
+            can_reveal_password=reveal,
         )
     )
 

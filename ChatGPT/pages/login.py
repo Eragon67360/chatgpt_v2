@@ -42,7 +42,7 @@ def _view_():
                                     spacing=5,
                                     controls=[
                                         inputText.InputTextField("Email", False),
-                                        inputText.InputTextField("Password", True),
+                                        inputText.InputTextField("Password", True, True),
                                     ]
                                 ),
                                 Row(

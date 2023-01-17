@@ -4,6 +4,8 @@ Interface for chatGPT
 import view
 from flet import *
 from view import ChangeRoute
+from gpt_control import getCompletion, getModelIDs
+from main import _moduleList
 
 text_home = [
         "\"Explain quantum computing in simple terms\"",
@@ -17,8 +19,71 @@ text_home = [
         "Limited knowledge of world and events after 2021"
 ]
 
+class GPTWrite(UserControl):
 
-class GPT(UserControl):
+    def __init__(self):
+        self.list_questions = []
+        self.list_answers = []
+        self.container = Container(
+            bgcolor="#40414f",
+            width=600,
+            border_radius=6,
+            content=Row(
+                alignment=MainAxisAlignment.SPACE_BETWEEN,
+                controls=[
+                    Container(
+                        alignment=alignment.center,
+                        content=TextField(
+                            width=500,
+                            text_size=14,
+                            color=colors.WHITE,
+                            border_radius=6,
+                            bgcolor="#40414f",
+                            border_color="transparent",
+                            filled=True,
+                            dense=True,
+                            cursor_color=colors.WHITE,
+                            cursor_width=1,
+                            hint_text="Your question...",
+                            prefix_icon = icons.QUESTION_MARK,
+                            hint_style=TextStyle(size=11, color=colors.BLUE_GREY),
+                            keyboard_type=KeyboardType.MULTILINE,
+                            min_lines=1,
+                            max_lines=4,
+                            expand=True,
+                            shift_enter=True,
+                            on_submit=lambda e: self.onRequest(e),
+                            
+                        ),
+                    ),
+                    IconButton(
+                        icon=icons.SEND,                        
+                        icon_size=20,
+                        on_click=lambda e: self.onRequest(e),
+                    ),
+                ]
+            ),
+                        
+        )
+        super().__init__()
+
+    def build(self):
+        
+        return self.container
+
+    def onRequest(self,e):
+        global _moduleList
+        for page in e.page.views[:]:
+            if page.route == '/chatgpt':
+                model = page.controls[0].controls[0].controls[2].controls[0].dropdown.value
+                prompt = page.controls[0].controls[0].controls[2].controls[2].container.content.controls[0].content.value
+        
+        print(model)
+        print(prompt)
+        # ret = getCompletion()
+
+
+class GPTAnswer(UserControl):
     def __init__(self):
         self.list_questions = []
         self.list_answers = []
@@ -28,6 +93,47 @@ class GPT(UserControl):
 
     def build(self):
         return Container(
-            Text("TEST")
+            content=Column(
+                expand=True,
+                alignment=MainAxisAlignment.END,                    
+                horizontal_alignment=CrossAxisAlignment.CENTER,
+                controls=[
+                    Row(
+                        controls=[
+                            Markdown(
+                                "Hey this is a test",
+                                selectable=True,
+                                extension_set="gitHubWeb",
+                                code_theme="tomorrow-night",
+                                code_style=TextStyle(font_family="Roboto Mono"),
+                                on_tap_link=lambda e: page.launch_url(e.data),width=700)
+                        ],
+                    ),
+                ],
+            ),
+        )
 
+class GPTParameters(UserControl):
+    def __init__(self):
+        self.list_questions = []
+        self.list_answers = []
+
+        self.model_davinci = "text-davinci-003"
+        self.dropdown = Dropdown(
+            label="Model",
+            hint_text="Choose the model you want to use",
+            dense=True,            
+        )
+
+        super().__init__()
+
+    def build(self):
+        modelIDS=getModelIDs()
+        options = [dropdown.Option('') for i in range(len(modelIDS))]
+        for i in range(len(modelIDS)):
+            options[i] = dropdown.Option(modelIDS[i])
+        self.dropdown.options = options
+        
+        return Container(
+            content=self.dropdown,
         )
