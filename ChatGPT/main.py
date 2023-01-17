@@ -1,4 +1,4 @@
-from flet import flet, Page
+from flet import flet, Page,ThemeMode
 import os, importlib.util
 
 #routing
@@ -25,8 +25,8 @@ for _, dirs, __ in os.walk(r'./'):
 def main(page: Page):
     page.title = 'OpenAI All-In-One'
 
+    page.theme_mode = ThemeMode.DARK
 
-    #first page will be the login view
     page.views.append(
         _moduleList['/login'].loader.load_module()._view_()
     )
