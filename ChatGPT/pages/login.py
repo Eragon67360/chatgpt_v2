@@ -5,7 +5,6 @@ from flet import *
 from controls import inputText
 from view import ChangeRoute, LogInUser
 
-
 def _view_():
     return View(
         "/login",
