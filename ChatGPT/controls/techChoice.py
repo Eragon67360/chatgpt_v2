@@ -29,7 +29,7 @@ class TechChoice(UserControl):
                             controls=[
                                 Container(
                                     content=ElevatedButton(
-                                        on_click=None,
+                                        on_click=lambda e: ChangeRoute(e, '/chatgpt'),
                                         content=Text(
                                             "ChatGPT v2",
                                             size=16,
