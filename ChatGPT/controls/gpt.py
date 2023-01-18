@@ -24,6 +24,7 @@ class GPTWrite(UserControl):
     def __init__(self):
         self.list_questions = []
         self.list_answers = []
+        self.model_davinci = "text-davinci-003"
         self.container = Container(
             bgcolor="#40414f",
             width=600,
@@ -63,7 +64,7 @@ class GPTWrite(UserControl):
                     ),
                 ]
             ),
-                        
+
         )
         super().__init__()
 
@@ -77,10 +78,17 @@ class GPTWrite(UserControl):
             if page.route == '/chatgpt':
                 model = page.controls[0].controls[0].controls[2].controls[0].dropdown.value
                 prompt = page.controls[0].controls[0].controls[2].controls[2].container.content.controls[0].content.value
+
+                if model == None:
+                    model = self.model_davinci
+                ret = getCompletion(model=model, prompt=prompt)
+                if ret != None:
+                    print(ret)
+                    page.controls[0].controls[0].controls[2].controls[1].container.content.controls[0].controls[0].value = ret
+                    page.controls[0].controls[0].controls[2].controls[1].container.content.controls[0].controls[0].update()
+
         
-        print(model)
-        print(prompt)
-        # ret = getCompletion()
+
 
 
 class GPTAnswer(UserControl):
@@ -89,10 +97,7 @@ class GPTAnswer(UserControl):
         self.list_answers = []
 
         self.model_davinci = "text-davinci-003"
-        super().__init__()
-
-    def build(self):
-        return Container(
+        self.container = Container(
             content=Column(
                 expand=True,
                 alignment=MainAxisAlignment.END,                    
@@ -112,6 +117,10 @@ class GPTAnswer(UserControl):
                 ],
             ),
         )
+        super().__init__()
+
+    def build(self):
+        return self.container
 
 class GPTParameters(UserControl):
     def __init__(self):
