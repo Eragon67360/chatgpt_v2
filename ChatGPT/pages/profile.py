@@ -9,7 +9,8 @@ from controls.profileData import ProfileData
 
 from view import ShowMenu, ChangeRoute, openDiscord, openHelp, LogOutUser,newChat
 
-def _view_(created_on, last_login, first_name, last_name, email):
+def _view_(created_on, last_login, first_name, last_name, email, page):
+    page.overlay[0].controls[0].controls[0].value = "Profile"
     return View(
         '/profile',
         controls=[
