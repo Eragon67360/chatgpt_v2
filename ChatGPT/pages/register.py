@@ -6,7 +6,8 @@ from flet import *
 from controls import inputText
 from view import ChangeRoute, Registeruser
 
-def _view_():
+def _view_(page):
+    page.overlay[0].controls[0].controls[0].value = ""
     return View(
         "/register",
         horizontal_alignment=CrossAxisAlignment.CENTER,
@@ -42,10 +43,10 @@ def _view_():
                                 Column(
                                     spacing=5,
                                     controls=[
-                                        inputText.InputTextField("First Name", False),
-                                        inputText.InputTextField("Last Name", False),
-                                        inputText.InputTextField("Email", False),
-                                        inputText.InputTextField("Password (min. 6 characters)", True),
+                                        inputText.InputTextField("First Name", False, None, lambda e: Registeruser(e)),
+                                        inputText.InputTextField("Last Name", False, None, lambda e: Registeruser(e)),
+                                        inputText.InputTextField("Email", False, None, lambda e: Registeruser(e)),
+                                        inputText.InputTextField("Password (min. 6 characters)", True, True, lambda e: Registeruser(e)),
                                     ]
                                 ),
                                
