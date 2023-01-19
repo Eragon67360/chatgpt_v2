@@ -5,8 +5,9 @@ Navbar menu
 from flet import *
 
 class ModernNavBar(UserControl):
-    def __init__(self, func_home, func_mode, func_discord, func_updates, func_profile, func_logout):
+    def __init__(self, func_home,func_new, func_mode, func_discord, func_updates, func_profile, func_logout):
         self.func_home = func_home
+        self.func_new = func_new
         self.func_mode = func_mode
         self.func_discord = func_discord
         self.func_updates = func_updates
@@ -57,7 +58,8 @@ class ModernNavBar(UserControl):
                 spacing=5,
                 controls=[
                     self.ContainedIcon(icons.HOME, 'Home', self.func_home),
-                    self.ContainedIcon(icons.SUNNY, 'Light mode', self.func_mode),
+                    self.ContainedIcon(icons.ADD, 'New Chat', self.func_new),
+                    self.ContainedIcon(icons.SUNNY, 'Light mode', self.func_mode),                    
                     Divider(color=colors.BLUE_GREY, height=5),
                     self.ContainedIcon(icons.DISCORD, 'OpenAI Discord', self.func_discord),
                     self.ContainedIcon(icons.OPEN_IN_NEW, 'Updates & FAQ', self.func_updates),
