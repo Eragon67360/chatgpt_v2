@@ -192,6 +192,11 @@ def openDiscord(e):
 def openHelp(e):
     webbrowser.open('https://help.openai.com/en/')
 
+def newChat(e):
+    for page in e.page.views[:]:
+        if page.route == '/chatgpt':
+            page.controls[0].controls[0].controls[2].controls[1].controls[0].controls.clear()
+            page.controls[0].controls[0].controls[2].controls[1].update()
 
 def ProfileUserData():
     global _moduleList

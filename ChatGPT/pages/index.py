@@ -6,7 +6,7 @@ Page displayed when login
 from flet import *
 from controls.navbar import ModernNavBar
 from controls.techChoice import TechChoice
-from view import ShowMenu,LogOutUser, ChangeRoute, openDiscord, openHelp#,PostText, LogUserOut,ChangeRoute
+from view import ShowMenu,LogOutUser, ChangeRoute, openDiscord, openHelp,newChat
 
 def _view_(first_name: str, last_name: str):
     return View(
@@ -28,7 +28,8 @@ def _view_(first_name: str, last_name: str):
                                         animate=animation.Animation(35,"decelerate"),
                                         on_hover=lambda e:ShowMenu(e),
                                         content=ModernNavBar(
-                                            None,
+                                            lambda e: ChangeRoute(e, '/index'),
+                                            lambda e: newChat(e),
                                             None,
                                             lambda e: openDiscord(e),
                                             lambda e: openHelp(e),
