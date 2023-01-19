@@ -5,7 +5,24 @@ from flet import *
 from controls import inputText
 from view import ChangeRoute, LogInUser
 
-def _view_():
+def _view_(page:Page):
+    page.overlay.append(
+        Column(
+            opacity=0.1,
+            alignment=MainAxisAlignment.CENTER,
+            horizontal_alignment=CrossAxisAlignment.CENTER,
+            controls=[
+                Row(
+                    alignment=MainAxisAlignment.CENTER,
+                    vertical_alignment=CrossAxisAlignment.CENTER,
+                    controls=[
+                        Text("",size=30,),
+                    ]
+                ),
+
+            ]
+        )
+    )
     return View(
         "/login",
         horizontal_alignment=CrossAxisAlignment.CENTER,
@@ -41,8 +58,8 @@ def _view_():
                                 Column(
                                     spacing=5,
                                     controls=[
-                                        inputText.InputTextField("Email", False),
-                                        inputText.InputTextField("Password", True, True),
+                                        inputText.InputTextField("Email", False, None,lambda e: LogInUser(e)),
+                                        inputText.InputTextField("Password", True, True,lambda e: LogInUser(e)),
                                     ]
                                 ),
                                 Row(
