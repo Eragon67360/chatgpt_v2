@@ -1,9 +1,10 @@
 from flet import *
 from controls.navbar import ModernNavBar
 from view import ShowMenu,LogOutUser, ChangeRoute, openDiscord, openHelp
-from controls.dall_e import Dall_E
+from controls.dall_e import Dall_E, Dall_e_Image
 
-def _view_():
+def _view_(page):
+    page.overlay[0].controls[0].controls[0].value = "DALL·E 2"
     return View(
         '/dalle',
         controls=[
@@ -25,6 +26,7 @@ def _view_():
                                         content=ModernNavBar(
                                             lambda e: ChangeRoute(e, '/index'),
                                             None,
+                                            None,
                                             lambda e: openDiscord(e),
                                             lambda e: openHelp(e),
                                             lambda e: ChangeRoute(e, '/profile'),
@@ -33,13 +35,13 @@ def _view_():
                                     ),
                                 ],
                             ),
-                            VerticalDivider(width=60, color=colors.TRANSPARENT),
-                            Column(
+                            VerticalDivider(width=60, color=colors.TRANSPARENT),                            
+                            Column(                                
                                 expand=True,
-                                alignment=MainAxisAlignment.CENTER,
                                 horizontal_alignment=CrossAxisAlignment.CENTER,
                                 controls=[
                                     Dall_E(),
+                                    Dall_e_Image(),
                                 ]
                             )
                         ]
