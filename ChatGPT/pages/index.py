@@ -8,7 +8,8 @@ from controls.navbar import ModernNavBar
 from controls.techChoice import TechChoice
 from view import ShowMenu,LogOutUser, ChangeRoute, openDiscord, openHelp,newChat
 
-def _view_(first_name: str, last_name: str):
+def _view_(first_name: str, last_name: str, page: Page):
+    page.overlay[0].controls[0].controls[0].value = ""
     return View(
         '/index',
         controls=[
