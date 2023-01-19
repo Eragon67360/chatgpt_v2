@@ -8,7 +8,8 @@ from view import ShowMenu,LogOutUser, ChangeRoute, openDiscord, openHelp,newChat
 import webbrowser
 import time
 
-def _view_():
+def _view_(page):
+    page.overlay[0].controls[0].controls[0].value = "ChatGPT v.2"
     return View(
         '/chatgpt',
         controls=[
