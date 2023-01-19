@@ -1,11 +1,10 @@
 from flet import *
 import os, importlib.util
-
+from controls.navbar import ModernNavBar
 #routing
 global _moduleList
 _moduleList = {}
 
-#os.walk() to gt the data of home
 for _, dirs, __ in os.walk(r'./'):
     for dir in dirs:
         if dir =='pages':
@@ -24,14 +23,15 @@ def main(page: Page):
     page.padding = 0
     page.theme_mode = ThemeMode.DARK
     page.dark_theme = Theme(page_transitions=PageTransitionsTheme.ios)
-
+    
     page.window_min_width = 730
+    page.window_min_height = 300
     page.views.append(
-        _moduleList['/chatgpt'].loader.load_module()._view_()
+        _moduleList['/login'].loader.load_module()._view_(page)
     )
 
     #set the URL
-    page.go("/chatgpt")
+    page.go("/login")
     page.update()
     pass
 
