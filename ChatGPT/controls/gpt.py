@@ -1,7 +1,7 @@
 """
 Interface for chatGPT
 """
-import view
+import time
 from flet import *
 from view import ChangeRoute
 from gpt_control import getCompletion, getModelIDs
@@ -57,11 +57,18 @@ class GPTWrite(UserControl):
                             
                         ),
                     ),
+                    ProgressRing(
+                        width=16,
+                        height=16,
+                        stroke_width = 2,
+                        visible=False,
+                    ),
                     IconButton(
-                        icon=icons.SEND,                        
+                        icon=icons.SEND,
+                        tooltip="Send request",
                         icon_size=20,
                         on_click=lambda e: self.onRequest(e),
-                    ),
+                    ),                    
                 ]
             ),
 
@@ -76,20 +83,57 @@ class GPTWrite(UserControl):
         global _moduleList
         for page in e.page.views[:]:
             if page.route == '/chatgpt':
-                model = page.controls[0].controls[0].controls[2].controls[0].dropdown.value
-                prompt = page.controls[0].controls[0].controls[2].controls[2].container.content.controls[0].content.value
+                
+                # model value chosen in dropdown
+                model = page.controls[0].controls[0].controls[2].controls[0].controls[0].dropdown.value
 
+                # section for the answer+question asked
+                display = page.controls[0].controls[0].controls[2].controls[1].controls[0].controls
+
+                input_field = page.controls[0].controls[0].controls[2].controls[1].controls[1].container.content.controls[0].content
+                input = input_field.value
+
+
+                # Make progress ring visible
+                page.controls[0].controls[0].controls[2].controls[1].controls[1].container.content.controls[1].visible = True
+                page.controls[0].controls[0].controls[2].controls[1].controls[1].container.content.update()
+
+                answer_container = GPTAnswer()
+                answer_container.container.content.controls[0].content.controls[0].value = input
+                output_field = answer_container.container.content.controls[1].content.controls[2]
+                
+                display.append(answer_container)
+                page.controls[0].controls[0].controls[2].controls[1].update()
+
+                prompt = input + "(generate your answer using markdown)"
+                self.list_questions.append(input)
+                input_field.value = ""
+                input_field.read_only = True
+                input_field.update()
+                
                 if model == None:
                     model = self.model_davinci
                 ret = getCompletion(model=model, prompt=prompt)
+                
                 if ret != None:
-                    print(ret)
-                    page.controls[0].controls[0].controls[2].controls[1].container.content.controls[0].controls[0].value = ret
-                    page.controls[0].controls[0].controls[2].controls[1].container.content.controls[0].controls[0].update()
+                    self.list_answers.append(ret)
+                    page.controls[0].controls[0].controls[2].controls[1].controls[1].container.content.controls[1].visible = False
+                    page.controls[0].controls[0].controls[2].controls[1].controls[1].container.content.update()
 
-        
+                    text_outputed =  ""
+                    for i in ret:
+                        text_outputed = text_outputed + i
+                        output_field.value = text_outputed
+                        output_field.update()
+                        time.sleep(0.01)
 
-
+                    input_field.read_only = False
+                    input_field.update()
+                    answer_container.container.content.controls[1].content.padding = 15
+                    answer_container.container.content.update()
+                    answer_container.container.content.controls[0].update()
+                    page.controls[0].controls[0].controls[2].controls[0].update()
+                    page.update()
 
 class GPTAnswer(UserControl):
     def __init__(self):
@@ -97,23 +141,39 @@ class GPTAnswer(UserControl):
         self.list_answers = []
 
         self.model_davinci = "text-davinci-003"
-        self.container = Container(
+        self.container = Container(            
             content=Column(
-                expand=True,
-                alignment=MainAxisAlignment.END,                    
-                horizontal_alignment=CrossAxisAlignment.CENTER,
+                
                 controls=[
-                    Row(
-                        controls=[
-                            Markdown(
-                                "Hey this is a test",
-                                selectable=True,
-                                extension_set="gitHubWeb",
-                                code_theme="tomorrow-night",
-                                code_style=TextStyle(font_family="Roboto Mono"),
-                                on_tap_link=lambda e: page.launch_url(e.data),width=700)
-                        ],
+                    Container(
+                        padding=5,
+                        content=Row(                        
+                            alignment=MainAxisAlignment.END,
+                            controls=[                                
+                                Text(
+                                    size=14,
+                                ),
+                                Divider(height=5),
+                                Icon(icons.PERSON),
+                            ]
+                        )
                     ),
+                    Container(
+                        padding=10,
+                        bgcolor="#444654",
+                        content=Row(                            
+                            controls=[
+                                Icon(icons.LIGHTBULB),
+                                Divider(height=5),
+                                Markdown(                                    
+                                    selectable=True,
+                                    extension_set="gitHubWeb",
+                                    code_theme="tomorrow-night",
+                                    code_style=TextStyle(font_family="Roboto Mono"),
+                                    on_tap_link=lambda e: page.launch_url(e.data),width=700)
+                            ],
+                        ),
+                    )
                 ],
             ),
         )
