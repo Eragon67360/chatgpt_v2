@@ -10,7 +10,7 @@ from datetime import datetime
 from API import API_FIREBASE
 from flet import *
 import webbrowser
-
+from urllib3.exceptions import HTTPError
 
 # Your web app's Firebase configuration
 # For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -34,22 +34,39 @@ auth = firebase.auth()
 
 db = firebase.database()
 
-
-
 def ChangeRoute(e, page_route):
     global _moduleList
 
     e.page.views.clear()
+    e.page.overlay.clear()
+    e.page.overlay.append(
+        Column(
+            opacity=0.1,
+            alignment=MainAxisAlignment.CENTER,
+            horizontal_alignment=CrossAxisAlignment.CENTER,
+            controls=[
+                Row(
+                    alignment=MainAxisAlignment.CENTER,
+                    vertical_alignment=CrossAxisAlignment.CENTER,
+                    controls=[
+                        Text("",size=30,),
+                    ]
+                ),                
+
+            ]
+        )                 
+    )
+    e.page.update()
 
     if page_route == '/register':
         e.page.views.append(
-            _moduleList[page_route].loader.load_module()._view_()
+            _moduleList[page_route].loader.load_module()._view_(e.page)
         )
         e.page.go("/register")
 
     if page_route == '/login':
         e.page.views.append(
-            _moduleList[page_route].loader.load_module()._view_()
+            _moduleList[page_route].loader.load_module()._view_(e.page)
         )
         e.page.go("/login")
 
@@ -58,14 +75,15 @@ def ChangeRoute(e, page_route):
         e.page.views.append(
             _moduleList[page_route].loader.load_module()._view_(
             SESSION["firstName"],
-            SESSION["lastName"]
+            SESSION["lastName"],
+            e.page
             )
         )
         e.page.go("/index")
 
     if page_route == '/chatgpt':
         e.page.views.append(
-            _moduleList[page_route].loader.load_module()._view_()
+            _moduleList[page_route].loader.load_module()._view_(e.page)
         )
         e.page.go("/chatgpt")
 
@@ -77,14 +95,15 @@ def ChangeRoute(e, page_route):
                 last_login,
                 first_name,
                 last_name,
-                email
+                email,
+                e.page
             )
         )
         e.page.go("/profile")
 
     if page_route == '/dalle':
         e.page.views.append(
-            _moduleList[page_route].loader.load_module()._view_()
+            _moduleList[page_route].loader.load_module()._view_(e.page)
         )
         e.page.go("/dalle")
     else:
@@ -119,13 +138,26 @@ def Registeruser(e):
 
                 db.child('users').push(data)
                 e.page.views.clear()
-                e.page.views.append(_moduleList["/login"].loader.load_module()._view_())
+                e.page.views.append(_moduleList["/login"].loader.load_module()._view_(e.page))
 
                 e.page.update()
 
-            except Exception as e:
-                print(e)
+            except Exception as exc:
+                if type(exc == HTTPError):
+                    message = (exc.args[1])
 
+                    if "MISSING_PASSWORD" in message:
+                        e.page.show_snack_bar(SnackBar(content=Text("Please enter a password", color=colors.RED), open=True, bgcolor="#474855"))
+                    elif "INVALID_PASSWORD" in message:
+                        e.page.show_snack_bar(SnackBar(content=Text("Please enter a valid password", color=colors.RED), open=True, bgcolor="#474855"))
+                    elif "INVALID_EMAIL" in message:
+                        e.page.show_snack_bar(SnackBar(content=Text("Please enter a valid email address", color=colors.RED), open=True, bgcolor="#474855"))
+                    elif "EMAIL_EXISTS" in message:
+                        e.page.show_snack_bar(SnackBar(content=Text("There is an existing account with this email address", color=colors.RED), open=True, bgcolor="#474855"))
+                    elif "WEAK_PASSWORD" in message:
+                        e.page.show_snack_bar(SnackBar(content=Text("Password should be at least 6 characters", color=colors.RED), open=True, bgcolor="#474855"))
+                else:
+                    print(exc)
 def ShowMenu(e):
     
     for page in e.page.views[:]:
@@ -144,7 +176,8 @@ def LogInUser(e):
     
     e.page.views.append(_moduleList['/index'].loader.load_module()._view_(
         first_name,
-        last_name
+        last_name,
+        e.page
     ))
 
     e.page.go('/index')
@@ -183,8 +216,16 @@ def GetUserDetails(e):
 
                         return[first_name,last_name]
 
-            except  Exception as e:
-                print(e)
+            except  Exception as exc:
+                message = (exc.args[1])
+
+                if "MISSING_PASSWORD" in message:
+                    e.page.show_snack_bar(SnackBar(content=Text("Please enter a password", color=colors.RED), open=True, bgcolor="#474855"))
+                elif "INVALID_PASSWORD" in message:
+                    e.page.show_snack_bar(SnackBar(content=Text("Please enter a valid password", color=colors.RED), open=True, bgcolor="#474855"))
+                elif "INVALID_EMAIL" in message:
+                    e.page.show_snack_bar(SnackBar(content=Text("Please enter a valid email address", color=colors.RED), open=True, bgcolor="#474855"))
+
     
 def openDiscord(e):
     webbrowser.open('https://discord.com/invite/openai')
