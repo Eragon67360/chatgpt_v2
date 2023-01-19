@@ -21,7 +21,7 @@ for _, dirs, __ in os.walk(r'./'):
 
 def main(page: Page):
     page.title = 'OpenAI All-In-One'
-
+    page.padding = 0
     page.theme_mode = ThemeMode.DARK
     page.dark_theme = Theme(page_transitions=PageTransitionsTheme.ios)
 
