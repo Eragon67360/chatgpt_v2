@@ -35,15 +35,30 @@ def _view_(page):
                                     ),
                                 ],
                             ),
-                            VerticalDivider(width=60, color=colors.TRANSPARENT),                            
-                            Column(                                
+                            VerticalDivider(width=60, color=colors.YELLOW),
+                            Column(
                                 expand=True,
-                                horizontal_alignment=CrossAxisAlignment.CENTER,
+                                alignment=MainAxisAlignment.START,
+                                horizontal_alignment=CrossAxisAlignment.START,
                                 controls=[
-                                    Dall_E(),
-                                    Dall_e_Image(),
-                                ]
-                            )
+                                    Column(
+                                        expand=False,
+                                        alignment=MainAxisAlignment.START,
+                                        horizontal_alignment=CrossAxisAlignment.CENTER,
+                                        controls=[
+                                            Dall_E(),
+                                        ]
+                                    ),
+                                    Column(
+                                        expand=True,
+                                        alignment=MainAxisAlignment.START,
+                                        # horizontal_alignment=CrossAxisAlignment.CENTER,
+                                        controls=[
+                                            Dall_e_Image(),
+                                        ]
+                                    )
+                                ]),
+                            
                         ]
                     )
                 ]
