@@ -26,10 +26,30 @@ def main(page: Page):
     
     page.window_min_width = 730
     page.window_min_height = 300
+
+    page.overlay.clear()
+    page.overlay.append(
+        Column(
+            opacity=0.1,
+            alignment=MainAxisAlignment.CENTER,
+            horizontal_alignment=CrossAxisAlignment.CENTER,
+            controls=[
+                Row(
+                    alignment=MainAxisAlignment.CENTER,
+                    vertical_alignment=CrossAxisAlignment.CENTER,
+                    controls=[
+                        Text("",size=30,),
+                    ]
+                ),
+
+            ]
+        )
+    )
+
     page.views.append(
         _moduleList['/login'].loader.load_module()._view_(page)
     )
-
+    
     #set the URL
     page.go("/login")
     page.update()
