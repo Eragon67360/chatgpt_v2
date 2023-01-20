@@ -5,24 +5,7 @@ from flet import *
 from controls import inputText
 from view import ChangeRoute, LogInUser
 
-def _view_(page:Page):
-    page.overlay.append(
-        Column(
-            opacity=0.1,
-            alignment=MainAxisAlignment.CENTER,
-            horizontal_alignment=CrossAxisAlignment.CENTER,
-            controls=[
-                Row(
-                    alignment=MainAxisAlignment.CENTER,
-                    vertical_alignment=CrossAxisAlignment.CENTER,
-                    controls=[
-                        Text("",size=30,),
-                    ]
-                ),
-
-            ]
-        )
-    )
+def _view_(page:Page):    
     return View(
         "/login",
         horizontal_alignment=CrossAxisAlignment.CENTER,
