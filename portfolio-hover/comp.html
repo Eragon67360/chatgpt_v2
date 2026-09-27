@@ -1,0 +1,118 @@
+<!doctype html>
+<!-- ChatGPT v.2 hover loop (8s, 1280x800). Real UI captured by capture.mjs from the Flet app
+     (served offline by app/serve.py); starts and ends on the card screenshot (captures/card.png). -->
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="base.css" />
+<style>
+  /* Screenshot space: the published 1047x714 screenshot, scaled to the card width (object-fit: cover, top). */
+  #cam { position: absolute; left: 0; top: 0; width: 1047px; height: 714px; transform-origin: 0 0; background: #1c1d20; }
+  #card { position: absolute; left: 0; top: 0; width: 1047px; height: 714px; z-index: 5; }
+  /* The window's client area inside the screenshot (below the title bar, inside the 1px border). */
+  #client { position: absolute; left: 1px; top: 29px; width: 1045px; height: 684px; overflow: hidden; }
+  /* The window title bar stays from the screenshot while the client area plays the captures. */
+  #chrome { position: absolute; left: 0; top: 0; width: 1047px; height: 29px; z-index: 4;
+    background: url("captures/card.png") no-repeat 0 0 / 1047px 714px; }
+  #client img { position: absolute; inset: 0; width: 1045px; height: 684px; opacity: 0; }
+  
+</style>
+</head>
+<body>
+<div class="stage">
+  <div id="cam">
+    <div id="client"></div>
+<div id="chrome"></div>
+    <img id="card" src="captures/card.png" />
+    <div class="hv-cursor" id="cursor"></div>
+  </div>
+</div>
+<script src="engine.js"></script>
+<script src="captures/layout.js"></script>
+<script>
+  const { tw, seg, keys, ease, clamp } = HV;
+  const L = window.LAYOUT;
+  const $ = (id) => document.getElementById(id);
+  const K = 1280 / 1047;          // screenshot px -> stage px
+  const C = ([x, y]) => [x + 1, y + 29]; // client px -> screenshot px
+  const [Q1, Q2] = L.q;
+
+  // Timeline (seconds).
+  const T = {
+    toCapture: 0.4, hoverNav: 1.0, clickNew: 1.35, collapse: 1.6, clickInput: 1.95,
+    type1: 2.05, cps1: 17, send1: 3.1, ans1: [3.15, 4.95],
+    clickInput2: 5.05, type2: 5.12, cps2: 38, send2: 6.1, ans2: [6.15, 6.85], back: [6.95, 7.2],
+  };
+
+  // Every capture as a stacked image; states switch by opacity (no async decode during render).
+  const imgs = {};
+  const add = (name) => {
+    const img = document.createElement("img");
+    img.src = `captures/${name}.jpg`;
+    $("client").appendChild(img);
+    imgs[name] = img;
+  };
+  ["full", "nav-hover", "cleared", "empty", "final"].forEach(add);
+  for (let i = 0; i <= Q1.length; i++) add(`c1-q-${i}`);
+  for (let i = 0; i <= Q2.length; i++) add(`c2-q-${i}`);
+  L.frames["c1-a"].forEach(([, n]) => add(n));
+  L.frames["c2-a"].forEach(([, n]) => add(n));
+
+  /** The recorded frame shown at video time t, the recording being time-mapped onto [a, b]. */
+  function played(frames, t, [a, b]) {
+    const rt = ((t - a) / (b - a)) * frames[frames.length - 1][0];
+    let name = frames[0][1];
+    for (const [ft, n] of frames) if (ft <= rt) name = n;
+    return name;
+  }
+  function stateAt(t) {
+    if (t < T.hoverNav) return "full";
+    if (t < T.clickNew + 0.05) return "nav-hover";
+    if (t < T.collapse) return "cleared";
+    if (t < T.clickInput + 0.05) return "empty";
+    if (t < T.send1 + 0.05) return `c1-q-${clamp(Math.floor((t - T.type1) * T.cps1), 0, Q1.length)}`;
+    if (t < T.clickInput2 + 0.05) return played(L.frames["c1-a"], t, T.ans1);
+    if (t < T.send2 + 0.05) return `c2-q-${clamp(Math.floor((t - T.type2) * T.cps2), 0, Q2.length)}`;
+    if (t < T.ans2[1]) return played(L.frames["c2-a"], t, T.ans2);
+    return "final";
+  }
+
+  const P = L.pos;
+  const at = (p, dx = 0, dy = 0) => { const [x, y] = C(p); return [x + dx, y + dy]; };
+  const [nx, ny] = at(P.newChat), [lx, ly] = at(P.newChatLabel), [ix, iy] = at(P.input), [sx, sy] = at(P.send);
+  const moveCursor = HV.cursor($("cursor"), [
+    [0.55, 700, 470], [T.hoverNav, nx + 4, ny], [1.2, lx - 10, ly], [T.clickNew, lx - 10, ly],
+    [T.clickInput, ix - 120, iy], [2.95, ix - 120, iy], [T.send1, sx, sy], [3.45, 690, 470],
+    [4.7, 690, 470], [T.clickInput2, ix - 120, iy], [5.9, ix - 120, iy], [T.send2, sx, sy], [6.55, 700, 470],
+  ], [T.clickNew, T.clickInput, T.send1, T.clickInput2, T.send2]);
+
+  // Camera: focus point (screenshot px) and zoom; clamped so the frame stays covered.
+  const camF = [[0, 523.5, 327.2, 1], [0.5, 523.5, 327.2, 1], [1.3, 330, 330, 1.18], [2.1, 590, 560, 1.32],
+    [3.15, 590, 560, 1.32], [3.6, 600, 300, 1.22], [4.85, 600, 300, 1.22], [5.3, 590, 560, 1.28],
+    [6.05, 590, 560, 1.28], [6.5, 600, 420, 1.18], [7.1, 523.5, 327.2, 1], [8, 523.5, 327.2, 1]];
+  function camera(t) {
+    const fx = keys(t, camF.map((k) => [k[0], k[1]]));
+    const fy = keys(t, camF.map((k) => [k[0], k[2]]));
+    const z = keys(t, camF.map((k) => [k[0], k[3]]));
+    const s = K * z;
+    const tx = clamp(640 - fx * s, 1280 - 1047 * s, 0);
+    const ty = clamp(400 - fy * s, 800 - 714 * s, 0);
+    $("cam").style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    return s;
+  }
+
+  window.DURATION = 8;
+  window.renderAt = (t) => {
+    const cur = stateAt(t);
+    for (const [n, img] of Object.entries(imgs)) img.style.opacity = n === cur ? 1 : 0;
+    // The card screenshot fades to the live app and back (their content is the same conversation).
+    const card = t < 1 ? 1 - seg(t, T.toCapture, T.toCapture + 0.22) : seg(t, T.back[0], T.back[1]);
+    $("card").style.opacity = card;
+    const s = camera(t);
+    moveCursor(t);
+    // Keep the pointer at a constant on-screen size while the camera zooms.
+    $("cursor").style.transform += ` scale(${1 / s})`;
+  };
+</script>
+</body>
+</html>
